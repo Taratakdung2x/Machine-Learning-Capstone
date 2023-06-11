@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Website Prediksi Gambar</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script>
+    async function(run){
+        const MODEL_URL = 'http://127.0.0.1:8887/tfjs_model/model.json';
+        const model = await tf.loadLayersModel(MODEL_URL);
+    }
+</script>
+</head>
+
+<h1>Prediksi Gambar</h1>
+    <input type="file" id="imageUpload" accept="image/*">
+    <button onclick="predict()">Prediksi</button>
+    <div id="predictionResult"></div>
+
+    <script>
+        async function loadModel() {
+        const model = await tf.loadLayersModel('tfjs_model/model.json');
+        return model;
+    }  
+    async function predict() {
+      const imageUpload = document.getElementById('imageUpload');
+      const predictionResult = document.getElementById('predictionResult');
+      
+      // Memuat model
+      const model = await loadModel();
+      
+      // Mengambil gambar yang diunggah oleh pengguna
+      const image = imageUpload.files[0];
+      
+      // Membaca gambar sebagai data URL
+      const reader = new FileReader();
+      reader.onload = async function(event) {
+        const imgDataUrl = event.target.result;
+
+        // Membuat tensor dari gambar
+        const img = document.createElement('img');
+        img.src = imgDataUrl;
+        await img.decode();
+        const imageTensor = tf.browser.fromPixels(img);
+        
+        // Melakukan prediksi
+        const input = imageTensor.expandDims();
+        const prediction = model.predict(input);
+        
+        // Mengambil nilai prediksi
+        const predictionValue = prediction.arraySync()[0];
+        predictionResult.innerText = 'Hasil prediksi: ' + predictionValue;
+        
+        // Membersihkan sumber daya
+        imageTensor.dispose();
+        input.dispose();
+        prediction.dispose();
+      };
+      
+      reader.readAsDataURL(image);
+    }
+    </script>
+<body>
+    
+</body>
+</html>

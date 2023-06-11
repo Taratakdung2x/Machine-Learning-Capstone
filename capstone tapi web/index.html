@@ -1,0 +1,23 @@
+// Fungsi untuk memuat model dari file model.json
+async function loadModel() {
+  const model = await tf.loadLayersModel('model.json');
+  return model;
+}
+
+// Fungsi untuk melakukan prediksi terhadap gambar yang diunggah
+async function predict() {
+  const imageUpload = document.getElementById('imageUpload');
+  const predictionResult = document.getElementById('predictionResult');
+  
+  // Memuat model
+  const model = await loadModel();
+  
+  // Mengambil gambar yang diunggah oleh pengguna
+  const image = imageUpload.files[0];
+  
+  // Melakukan prediksi
+  const prediction = await model.predict(image);
+  
+  // Menampilkan hasil prediksi
+  predictionResult.innerText = 'Hasil prediksi: ' + prediction;
+}
